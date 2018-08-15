@@ -1,0 +1,325 @@
+Creating new Laravel Project with Voyager shell:
+
+1) Create db in phpMyAdmin (e.g. vidvoy01_db)
+
+2) Create new laravel project. Cmd line: new Laravel vidvoy01
+
+3) Require Voyager. Cmd line: 1) cd vidvoy01 2) "composer require tcg/voyager"
+
+4) In Sublime, edit .env file with database credentials and APP_URL.
+
+5) Update App/Providers/AppServiceProvider.php file with: 
+
+use Illuminate\Support\Facades\Schema;
+
+    public function boot()
+    {
+        //
+        Schema::defaultStringLength(191);
+    }
+
+5) Install Voyager. Cmd line: "php artisan voyager:install --with-dummy"
+
+6) Install Laravel auth functionality: Cmd line: "php artisan make:auth"
+
+7) Add authentication email level: https://medium.com/@sadhakbj/laravel-5-5-activate-account-after-registration-using-laravel-notification-fd5dc7fa05ad 
+   Add use Illuminate\Http\Request; to RegisterController.php
+
+8) add json to package, from cmd: npm install vue-autosize --save (possibly not needed)
+
+9) Seed tables (if needed)
+composer dump-autoload
+
+Run these two seeders:
+php artisan db:seed --class=VoyagerDatabaseSeeder
+php artisan db:seed --class=VoyagerDummyDatabaseSeeder
+
+...and it loads all of these seeds:
+php artisan db:seed --class=CategoriesTableSeeder	
+php artisan db:seed --class=DatabaseSeeder
+php artisan db:seed --class=DataRowsTableSeeder
+php artisan db:seed --class=DataTypesTableSeeder
+php artisan db:seed --class=MenuItemsTableSeeder
+php artisan db:seed --class=MenusTableSeeder
+php artisan db:seed --class=PagesTableSeeder
+php artisan db:seed --class=PermissionRoleTableSeeder
+php artisan db:seed --class=PermissionsTableSeeder 
+php artisan db:seed --class=PostsTableSeeder
+php artisan db:seed --class=RolesTableSeeder
+php artisan db:seed --class=SettingsTableSeeder
+php artisan db:seed --class=TranslationsTableSeeder
+php artisan db:seed --class=UsersTableSeeder
+
+
+10) Add form functionality. On Cmd line: composer require "laravelcollective/html"
+  https://stackoverflow.com/questions/28753767/laravel-5-class-form-not-found
+
+11) Update config/app.php by adding:
+'providers' => [
+    // ...
+    Collective\Html\HtmlServiceProvider::class,
+    // ...
+],
+
+'aliases' => [
+    // ...
+   'Form' => Collective\Html\FormFacade::class,
+   'Html' => Collective\Html\HtmlFacade::class,
+    // ...
+],
+
+
+12) Add language translators
+https://github.com/caouecs/Laravel-lang
+
+return view('welcome', compact('incidents'));
+
+13) Set debug option in config/app.php
+https://laravel.com/docs/5.6/errors
+
+14) Add ContactController for emailed Contact Us page
+
+php artisan make:controller ContactController
+php artisan make:request ContactFormRequest
+php artisan make:notification InboxMessage
+
+https://www.bnmetrics.com/blog/simple-contact-page-tutorial-laravel-54
+
+15) Update .env file with test site:
+   APP_URL=http://vidvoy01.test
+   ...and also update hosts file in C:\Windows\System32\drivers\etc like so (open with Admin priv):
+
+127.0.0.1 localhost
+127.0.0.1 auth01.test
+
+16) Add facebook comments to bottom of each post
+  https://www.youtube.com/watch?v=rT6Ebu2yvxA
+  https://developers.facebook.com/docs/plugins/comments/
+
+  Change: <div class="fb-comments" data-href="https://localhost:8000" data-numposts="5"></div>
+      to: <div class="fb-comments" data-href="{{ Request::url() }}" data-numposts="5" data-order-by="social"></div>	
+
+17) PayPal 
+  https://devdojo.com/blog/tutorials/using-paypal-in-your-laravel-app			
+   -composer require paypal/rest-api-sdk-php 
+   -composer require guzzlehttp/guzzle:~6.0
+  Install PHP PayPal SDK
+   https://github.com/paypal/PayPal-PHP-SDK/wiki/Installation-Composer
+  Making First Call
+    https://github.com/paypal/PayPal-PHP-SDK/wiki/Making-First-Call
+
+-OR-
+ BRAINTREE
+
+https://www.sitepoint.com/laravel-and-braintree-sitting-in-a-tree/
+https://www.sitepoint.com/laravel-and-braintree-middleware-and-other-advanced-concepts/
+
+php artisan braintree:sync-plans
+
+
+In prod:
+php artisan down
+php artisan braintree:sync-plans
+php artisan up
+
+ 
+18) Add Plans to braintree.com and add new webhooks also 
+
+19) Add Ngrok funcionality to test webhooks. Go to https://ngrok.com/ save zip file desktop
+   Open on desktop, from cmd line go to //users/mikdf/desktop and run cmd: ngrok http -host-header=vidvoy01.test 80
+
+ngrok http -host-header="localhost:8080" <- for help
+
+You can also check stats on http://localhost:4040/inspect/http
+
+https://ngrok.com/docs
+
+20) Upload changes from local repository to remote master branch
+https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/
+
+git init
+git add .
+git commit -m "1.4.00"
+git diff --stat --cached origin/master   #shows what will be pushed
+git push --dry-run
+git remote add origin remote repository URL  # Sets the new remote
+git remote -v  # Verifies the new remote URL
+git push origin master  # Pushes the changes in your local repository up to the remote repository you specified as the origin
+
+git symbolic-ref HEAD
+git branch
+
+21) If updating incident type options, update the following views:
+search/index.blade.php
+search/list.blade.php
+user/account.blade.php
+addinc.blade.php
+index.blade.php  ??
+incidents/pending.blade.php
+incidents/show.blade.php
+mod/listdate.blade.php
+
+
+22) Refresh controller: composer dump-autoload -o
+
+23)
+
+
+
+
+------------------------------------------------------------------------------------------------
+
+Mountain photo
+Photo by Joshua Earle on Unsplash
+
+
+
+
+unsplash.com
+	
+php artisan migrate:status
+shows this screen ->
++------+-----------------------------------------------------------------+-------+
+| Y    | 2014_10_12_000000_create_users_table                            | 1     |
+| Y    | 2014_10_12_100000_create_password_resets_table                  | 1     |
+| N    | 2016_01_01_000000_add_voyager_user_fields                       |       |
+| N    | 2016_01_01_000000_create_data_types_table                       |       |
+| N    | 2016_01_01_000000_create_pages_table                            |       |
+| N    | 2016_01_01_000000_create_posts_table                            |       |
+| N    | 2016_02_15_204651_create_categories_table                       |       |
+| N    | 2016_05_19_173453_create_menu_table                             |       |
+| N    | 2016_10_21_190000_create_roles_table                            |       |
+| N    | 2016_10_21_190000_create_settings_table                         |       |
+| N    | 2016_11_30_135954_create_permission_table                       |       |
+| N    | 2016_11_30_141208_create_permission_role_table                  |       |
+| N    | 2016_12_26_201236_data_types__add__server_side                  |       |
+| N    | 2017_01_13_000000_add_route_to_menu_items_table                 |       |
+| N    | 2017_01_14_005015_create_translations_table                     |       |
+| N    | 2017_01_15_000000_make_table_name_nullable_in_permissions_table |       |
+| N    | 2017_03_06_000000_add_controller_to_data_types_table            |       |
+| N    | 2017_04_11_000000_alter_post_nullable_fields_table              |       |
+| N    | 2017_04_21_000000_add_order_to_data_rows_table                  |       |
+| N    | 2017_07_05_210000_add_policyname_to_data_types_table            |       |
+| N    | 2017_08_05_000000_add_group_to_settings_table                   |       |
+| N    | 2017_11_26_013050_add_user_role_relationship                    |       |
+| N    | 2017_11_26_015000_create_user_roles_table                       |       |
+| N    | 2018_03_11_000000_add_user_settings                             |       |
+| N    | 2018_03_14_000000_add_details_to_data_types_table               |       |
+| N    | 2018_03_16_000000_make_settings_value_nullable                  |
+
+
+
+
+
+
+Inctype updates:
+
+           <select name="inctype">
+              <option value="all">All</option>
+              <option value="animal">Animal/pet</option>
+              <option value="assault">Assault/battery</option>
+              <option value="hate">Bias/hate crime</option>
+              <option value="boat">Boat/marine</option>
+              <option value="brglry">Burglary/theft</option>
+              <option value="injury">Injury</option>
+              <option value="intim">Intimidation</option>
+              <option value="police">Police/Security</option>
+              <option value="propdam">Property damage</option>
+              <option value="rape">Rape/sexual assault</option>
+              <option value="vandal">Vandalism</option>
+              <option value="road">Vehicle</option>
+              <option value="misc">Other</option>
+           </select>
+
+					   if ($inctype == "animal"){
+				      $inctype = "Animal/pet";
+				   } elseif ($inctype == "assault"){
+				      $inctype = "Assault/battery";
+				   } elseif ($inctype == "hate"){
+				        $inctype = "Bias/hate crime";
+				   } elseif ($inctype == "boat"){
+				        $inctype = "Boat/marine";   
+				   } elseif ($inctype == "brglry"){
+				        $inctype = "Burglary/theft";
+				   } elseif ($inctype == "injury"){
+				        $inctype = "Injury";
+				   } elseif ($inctype == "intim"){
+				        $inctype = "Intimidation";     
+				   } elseif ($inctype == "police"){
+				        $inctype = "Police/Security";
+				   } elseif ($inctype == "propdam"){
+				        $inctype = "Property damage";
+				   } elseif ($inctype == "rape"){
+				        $inctype = "Rape/sexual assault";
+				   } elseif ($inctype == "vandal"){
+				        $inctype = "Vandalism";          
+				   } elseif ($inctype == "road"){
+				        $inctype = "Vehicle";
+				   } elseif ($inctype == "othr"){
+				        $inctype = "Other";
+				   }
+
+
+,
+          customer_id: '{{ Auth::User()->braintree_id }}'
+
+
+$aCustomerId = Auth::user()->braintree_id;
+    	dd($aCustomerId);
+
+[
+                	'customerId' => $aCustomerId
+                ]
+
+
+'paymentMethodNonce' =>
+
+    	  }
+           
+          // subscribe the user
+          if (!$request->user()->subscribed('main')) {
+           $request->user()->newSubscription('billingDayOfMonth', 1);
+     		   $request->user()->newSubscription('main', $plan->braintree_plan)->create(array(
+                     $request->payment_method_nonce, 
+                     'options' => [
+                          'billingDayOfMonth'  => 1
+                      ]
+                     
+                   )); 
+        	
+
+
+<iframe src="https://player.vimeo.com/video/138172498" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="https://vimeo.com/138172498">Make Money Online Database</a> from <a href="https://vimeo.com/user43512416">Cindy Mitch</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
+
+
+
+
+
+           if (locations[i].inctype =="animal"){ inctyp='Animal/pet'}   
+            else if (locations[i].inctype =="assault"){ inctyp='Assault/battery'}
+             else if (locations[i].inctype =="hate"){ inctyp='Bias/hate crime'}
+              else if (locations[i].inctype =="boat"){ inctyp='Boat/marine'}
+               else if (locations[i].inctype =="brglry"){ inctyp='Burglary'}
+                else if (locations[i].inctype =="injury"){ inctyp='Injury'}
+                 else if (locations[i].inctype =="intim"){ inctyp='Intimidation'}   
+                  else if (locations[i].inctype =="police"){ inctyp='Police'} 
+                   else if (locations[i].inctype =="propdam"){ inctyp='Property damage'}
+                    else if (locations[i].inctype =="rape"){ inctyp='Rape/sexual assault'}
+                     else if (locations[i].inctype =="vandal"){ inctyp='Vandalism'}
+                      else if (locations[i].inctype =="road"){ inctyp='Vehicle'}  
+                       else if (locations[i].inctype =="othr"){ inctyp='Other'}
+
+
+
+
+
+
+
+<!--div class="container">
+
+   @include('layouts.navbar')
+   
+ </div-->
+
